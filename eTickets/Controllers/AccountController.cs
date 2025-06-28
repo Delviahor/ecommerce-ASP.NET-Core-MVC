@@ -84,9 +84,20 @@ namespace eTickets.Controllers
             var newUserResponse = await _userManager.CreateAsync(newUser, registerVM.Password);
 
             if (newUserResponse.Succeeded)
+            {
                 await _userManager.AddToRoleAsync(newUser, UserRoles.User);
 
-            return View("RegisterCompleted");
+                return View("RegisterCompleted");
+            }
+            else
+            {
+                // Add each error to the ModelState so they appear in the view
+                foreach (var error in newUserResponse.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(registerVM);
+            }
         }
 
         [HttpPost]
